@@ -1,0 +1,8 @@
+import Fastify from "fastify";
+import { registerRoutes } from "./routes";
+
+export async function buildApiServer() {
+  const server = Fastify({ logger: true });
+  registerRoutes(server);
+  return server;
+}
