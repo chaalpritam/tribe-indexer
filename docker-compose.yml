@@ -1,0 +1,30 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: tribe
+      POSTGRES_PASSWORD: tribe
+      POSTGRES_DB: tribe_indexer
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./src/storage/migrations:/docker-entrypoint-initdb.d
+
+  indexer:
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      SOLANA_CLUSTER: devnet
+      SOLANA_RPC_URL: https://api.devnet.solana.com
+      SOLANA_WS_URL: wss://api.devnet.solana.com
+      DATABASE_URL: postgresql://tribe:tribe@postgres:5432/tribe_indexer
+      CAST_SERVER_URL: http://cast-server:3000
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata:
