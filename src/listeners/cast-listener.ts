@@ -13,7 +13,7 @@ export function startCastListener() {
       const res = await fetch(`${config.castServerUrl}/v1/castsByFid/0?limit=50`);
       if (!res.ok) return;
 
-      const data = await res.json();
+      const data = (await res.json()) as { casts?: { hash: string; fid: string; text: string; parent_hash?: string; channel_id?: string; mentions?: string[]; embeds?: string[]; timestamp: string }[] };
       for (const cast of data.casts || []) {
         const ts = new Date(cast.timestamp).getTime();
         if (ts > lastTimestamp) {

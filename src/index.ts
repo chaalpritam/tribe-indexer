@@ -1,4 +1,5 @@
 import { config } from "./config";
+import { runMigrations } from "./storage/db";
 import { startSolanaListener } from "./listeners/solana-listener";
 import { startCastListener } from "./listeners/cast-listener";
 import { buildApiServer } from "./api/server";
@@ -6,6 +7,8 @@ import { buildApiServer } from "./api/server";
 async function main() {
   console.log("Starting Tribe Indexer...");
   console.log(`Solana cluster: ${config.solanaCluster}`);
+
+  await runMigrations();
 
   // Start background listeners.
   startSolanaListener();
