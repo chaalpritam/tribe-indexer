@@ -60,3 +60,31 @@ CREATE TABLE IF NOT EXISTS list_members (
 
 CREATE INDEX IF NOT EXISTS idx_lists_owner ON lists (owner_tid);
 CREATE INDEX IF NOT EXISTS idx_list_members_list ON list_members (list_id);
+
+-- Encrypted DMs
+CREATE TABLE IF NOT EXISTS dm_keys (
+  tid             BIGINT PRIMARY KEY,
+  x25519_pubkey   TEXT NOT NULL,
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS dm_conversations (
+  id          BIGSERIAL PRIMARY KEY,
+  tid_a       BIGINT NOT NULL,
+  tid_b       BIGINT NOT NULL,
+  created_at  TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (tid_a, tid_b)
+);
+
+CREATE TABLE IF NOT EXISTS dm_messages (
+  id              BIGSERIAL PRIMARY KEY,
+  conversation_id BIGINT NOT NULL REFERENCES dm_conversations(id),
+  sender_tid      BIGINT NOT NULL,
+  encrypted_text  TEXT NOT NULL,
+  nonce           TEXT NOT NULL,
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_dm_conversations_a ON dm_conversations (tid_a);
+CREATE INDEX IF NOT EXISTS idx_dm_conversations_b ON dm_conversations (tid_b);
+CREATE INDEX IF NOT EXISTS idx_dm_messages_conv ON dm_messages (conversation_id, created_at DESC);
