@@ -65,6 +65,25 @@ async function backfillTid(tid: string): Promise<boolean> {
 }
 
 export async function userRoutes(server: FastifyInstance) {
+  // List all users
+  server.get<{
+    Querystring: { limit?: string; offset?: string };
+  }>("/users", async (request) => {
+    const limit = Math.min(parseInt(request.query.limit || "50", 10), 100);
+    const offset = parseInt(request.query.offset || "0", 10);
+    const result = await db.query(
+      `SELECT f.tid, f.custody_address, f.recovery_address, f.registered_at, f.username,
+              (SELECT COUNT(*) FROM social_graph WHERE follower_tid = f.tid AND deleted_at IS NULL) as following_count,
+              (SELECT COUNT(*) FROM social_graph WHERE following_tid = f.tid AND deleted_at IS NULL) as followers_count
+       FROM tids f
+       ORDER BY f.tid DESC
+       LIMIT $1 OFFSET $2`,
+      [limit, offset]
+    );
+    const countResult = await db.query(`SELECT COUNT(*)::int as total FROM tids`);
+    return { users: result.rows, total: countResult.rows[0]?.total ?? 0 };
+  });
+
   server.get<{ Params: { tid: string } }>(
     "/user/:tid",
     async (request, reply) => {
