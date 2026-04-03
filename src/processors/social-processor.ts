@@ -1,5 +1,6 @@
 import { createHash } from "crypto";
 import { db } from "../storage/db";
+import { createNotification } from "../api/routes/notifications";
 
 function eventDiscriminator(name: string): Buffer {
   return createHash("sha256").update(`event:${name}`).digest().subarray(0, 8);
@@ -42,6 +43,9 @@ export async function processSocialEvent(eventData: string, txSignature: string)
       [followerTid.toString(), followingTid.toString()]
     );
     console.log(`Followed: ${followerTid} -> ${followingTid} tx=${txSignature}`);
+
+    // Notify the user who was followed
+    await createNotification(Number(followingTid), "follow", Number(followerTid));
 
   } else if (discriminator.equals(DISCRIMINATORS.unfollowed)) {
     // Layout: follower_tid(u64) + following_tid(u64)

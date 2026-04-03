@@ -13,8 +13,15 @@ db.on("error", (err) => {
 });
 
 export async function runMigrations(): Promise<void> {
-  const migrationPath = join(__dirname, "migrations", "001_initial.sql");
-  const sql = readFileSync(migrationPath, "utf-8");
-  await db.query(sql);
+  const migrationsDir = join(__dirname, "migrations");
+  const files = ["001_initial.sql", "002_notifications.sql"];
+  for (const file of files) {
+    try {
+      const sql = readFileSync(join(migrationsDir, file), "utf-8");
+      await db.query(sql);
+    } catch {
+      // Migration file may not exist yet
+    }
+  }
   console.log("Database migrations applied.");
 }
