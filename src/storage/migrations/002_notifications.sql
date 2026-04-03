@@ -30,3 +30,14 @@ CREATE TABLE IF NOT EXISTS bookmarks (
 );
 
 CREATE INDEX IF NOT EXISTS idx_bookmarks_tid ON bookmarks (tid, created_at DESC);
+
+-- Retweets
+CREATE TABLE IF NOT EXISTS retweets (
+  tid         BIGINT NOT NULL,
+  tweet_hash  TEXT NOT NULL,
+  created_at  TIMESTAMPTZ DEFAULT NOW(),
+  PRIMARY KEY (tid, tweet_hash)
+);
+
+CREATE INDEX IF NOT EXISTS idx_retweets_tid ON retweets (tid, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_retweets_hash ON retweets (tweet_hash);
