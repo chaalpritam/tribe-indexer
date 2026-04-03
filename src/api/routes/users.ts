@@ -90,8 +90,11 @@ export async function userRoutes(server: FastifyInstance) {
       let result = await db.query(
         `SELECT f.tid, f.custody_address, f.recovery_address, f.registered_at, f.username,
                 (SELECT COUNT(*) FROM social_graph WHERE follower_tid = f.tid AND deleted_at IS NULL) as following_count,
-                (SELECT COUNT(*) FROM social_graph WHERE following_tid = f.tid AND deleted_at IS NULL) as followers_count
-         FROM tids f WHERE f.tid = $1`,
+                (SELECT COUNT(*) FROM social_graph WHERE following_tid = f.tid AND deleted_at IS NULL) as followers_count,
+                p.display_name, p.bio, p.avatar_url
+         FROM tids f
+         LEFT JOIN user_profiles p ON p.tid = f.tid
+         WHERE f.tid = $1`,
         [request.params.tid]
       );
 
@@ -102,8 +105,11 @@ export async function userRoutes(server: FastifyInstance) {
           result = await db.query(
             `SELECT f.tid, f.custody_address, f.recovery_address, f.registered_at, f.username,
                     (SELECT COUNT(*) FROM social_graph WHERE follower_tid = f.tid AND deleted_at IS NULL) as following_count,
-                    (SELECT COUNT(*) FROM social_graph WHERE following_tid = f.tid AND deleted_at IS NULL) as followers_count
-             FROM tids f WHERE f.tid = $1`,
+                    (SELECT COUNT(*) FROM social_graph WHERE following_tid = f.tid AND deleted_at IS NULL) as followers_count,
+                    p.display_name, p.bio, p.avatar_url
+             FROM tids f
+             LEFT JOIN user_profiles p ON p.tid = f.tid
+             WHERE f.tid = $1`,
             [request.params.tid]
           );
         }
@@ -114,6 +120,46 @@ export async function userRoutes(server: FastifyInstance) {
       return result.rows[0];
     }
   );
+
+  // Get user profile metadata (bio, avatar)
+  server.get<{ Params: { tid: string } }>(
+    "/user/:tid/profile",
+    async (request, reply) => {
+      const result = await db.query(
+        `SELECT tid, display_name, bio, avatar_url, updated_at FROM user_profiles WHERE tid = $1`,
+        [request.params.tid]
+      );
+      if (result.rows.length === 0)
+        return reply.status(404).send({ error: "Profile not found" });
+      return result.rows[0];
+    }
+  );
+
+  // Update user profile metadata (signed by custody wallet)
+  server.post<{
+    Params: { tid: string };
+    Body: { displayName?: string; bio?: string; avatarUrl?: string };
+  }>("/user/:tid/profile", async (request, reply) => {
+    const { displayName, bio, avatarUrl } = request.body ?? {};
+    if (!displayName && !bio && !avatarUrl) {
+      return reply.status(400).send({ error: "No fields to update" });
+    }
+    if (bio && bio.length > 160) {
+      return reply.status(400).send({ error: "Bio must be under 160 characters" });
+    }
+
+    await db.query(
+      `INSERT INTO user_profiles (tid, display_name, bio, avatar_url, updated_at)
+       VALUES ($1, $2, $3, $4, NOW())
+       ON CONFLICT (tid) DO UPDATE SET
+         display_name = COALESCE($2, user_profiles.display_name),
+         bio = COALESCE($3, user_profiles.bio),
+         avatar_url = COALESCE($4, user_profiles.avatar_url),
+         updated_at = NOW()`,
+      [request.params.tid, displayName ?? null, bio ?? null, avatarUrl ?? null]
+    );
+    return { ok: true };
+  });
 
   server.get<{ Params: { name: string } }>(
     "/user/by-username/:name",

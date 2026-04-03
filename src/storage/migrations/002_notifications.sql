@@ -11,3 +11,12 @@ CREATE TABLE IF NOT EXISTS notifications (
 
 CREATE INDEX IF NOT EXISTS idx_notifications_tid ON notifications (tid, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_notifications_unread ON notifications (tid, read) WHERE read = false;
+
+-- User profiles (off-chain metadata)
+CREATE TABLE IF NOT EXISTS user_profiles (
+  tid         BIGINT PRIMARY KEY,
+  display_name TEXT,
+  bio         TEXT,
+  avatar_url  TEXT,
+  updated_at  TIMESTAMPTZ DEFAULT NOW()
+);
