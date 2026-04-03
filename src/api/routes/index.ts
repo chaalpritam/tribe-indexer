@@ -5,6 +5,7 @@ import { feedRoutes } from "./feed";
 import { notificationRoutes } from "./notifications";
 import { bookmarkRoutes } from "./bookmarks";
 import { retweetRoutes } from "./retweets";
+import { trendingRoutes } from "./trending";
 import { healthRoutes } from "./health";
 
 export function registerRoutes(server: FastifyInstance) {
@@ -15,4 +16,5 @@ export function registerRoutes(server: FastifyInstance) {
   server.register(notificationRoutes, { prefix: "/v1" });
   server.register(bookmarkRoutes, { prefix: "/v1" });
   server.register(retweetRoutes, { prefix: "/v1" });
+  server.register(trendingRoutes, { prefix: "/v1" });
 }
