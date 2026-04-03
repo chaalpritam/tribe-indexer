@@ -41,3 +41,22 @@ CREATE TABLE IF NOT EXISTS retweets (
 
 CREATE INDEX IF NOT EXISTS idx_retweets_tid ON retweets (tid, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_retweets_hash ON retweets (tweet_hash);
+
+-- Lists
+CREATE TABLE IF NOT EXISTS lists (
+  id          BIGSERIAL PRIMARY KEY,
+  owner_tid   BIGINT NOT NULL,
+  name        TEXT NOT NULL,
+  description TEXT,
+  created_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS list_members (
+  list_id     BIGINT NOT NULL REFERENCES lists(id) ON DELETE CASCADE,
+  member_tid  BIGINT NOT NULL,
+  added_at    TIMESTAMPTZ DEFAULT NOW(),
+  PRIMARY KEY (list_id, member_tid)
+);
+
+CREATE INDEX IF NOT EXISTS idx_lists_owner ON lists (owner_tid);
+CREATE INDEX IF NOT EXISTS idx_list_members_list ON list_members (list_id);
