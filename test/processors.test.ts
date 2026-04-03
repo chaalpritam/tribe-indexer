@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 
 describe("Processors", () => {
-  it("should process FID registration event", () => {
-    // TODO: Mock event data, call processFidEvent, verify DB insert
+  it("should process TID registration event", () => {
+    // TODO: Mock event data, call processTidEvent, verify DB insert
     expect(true).toBe(true);
   });
 
@@ -11,8 +11,8 @@ describe("Processors", () => {
     expect(true).toBe(true);
   });
 
-  it("should process cast from cast server", () => {
-    // TODO: Mock cast data, call processCast, verify DB insert
+  it("should process tweet from tweet server", () => {
+    // TODO: Mock tweet data, call processTweet, verify DB insert
     expect(true).toBe(true);
   });
 });

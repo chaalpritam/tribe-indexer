@@ -1,6 +1,6 @@
 import { Connection, PublicKey, Logs } from "@solana/web3.js";
 import { config } from "../config";
-import { processFidEvent } from "../processors/fid-processor";
+import { processTidEvent } from "../processors/tid-processor";
 import { processSocialEvent } from "../processors/social-processor";
 
 const ANCHOR_EVENT_PREFIX = "Program data: ";
@@ -15,7 +15,7 @@ export function startSolanaListener() {
   });
 
   const programIds = [
-    { id: new PublicKey(config.programIds.fidRegistry), handler: processFidEvent },
+    { id: new PublicKey(config.programIds.tidRegistry), handler: processTidEvent },
     { id: new PublicKey(config.programIds.socialGraph), handler: processSocialEvent },
   ];
 

@@ -3,21 +3,21 @@ import { db } from "../../storage/db";
 
 export async function feedRoutes(server: FastifyInstance) {
   server.get<{
-    Params: { fid: string };
+    Params: { tid: string };
     Querystring: { limit?: string; cursor?: string };
-  }>("/feed/:fid", async (request) => {
+  }>("/feed/:tid", async (request) => {
     const limit = Math.min(parseInt(request.query.limit || "20", 10), 100);
     const result = await db.query(
-      `SELECT c.hash, c.fid, c.text, c.parent_hash, c.channel_id, c.mentions, c.embeds, c.timestamp,
+      `SELECT c.hash, c.tid, c.text, c.parent_hash, c.channel_id, c.mentions, c.embeds, c.timestamp,
               f.username
-       FROM casts c
-       LEFT JOIN fids f ON f.fid = c.fid
-       WHERE c.fid = $1 AND c.deleted = false
+       FROM tweets c
+       LEFT JOIN tids f ON f.tid = c.tid
+       WHERE c.tid = $1 AND c.deleted = false
        ORDER BY c.timestamp DESC
        LIMIT $2`,
-      [request.params.fid, limit]
+      [request.params.tid, limit]
     );
-    return { casts: result.rows };
+    return { tweets: result.rows };
   });
 
   server.get<{
@@ -26,15 +26,15 @@ export async function feedRoutes(server: FastifyInstance) {
   }>("/feed/channel/:channelId", async (request) => {
     const limit = Math.min(parseInt(request.query.limit || "20", 10), 100);
     const result = await db.query(
-      `SELECT c.hash, c.fid, c.text, c.parent_hash, c.channel_id, c.mentions, c.embeds, c.timestamp,
+      `SELECT c.hash, c.tid, c.text, c.parent_hash, c.channel_id, c.mentions, c.embeds, c.timestamp,
               f.username
-       FROM casts c
-       LEFT JOIN fids f ON f.fid = c.fid
+       FROM tweets c
+       LEFT JOIN tids f ON f.tid = c.tid
        WHERE c.channel_id = $1 AND c.deleted = false
        ORDER BY c.timestamp DESC
        LIMIT $2`,
       [request.params.channelId, limit]
     );
-    return { casts: result.rows };
+    return { tweets: result.rows };
   });
 }

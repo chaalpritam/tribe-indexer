@@ -1,5 +1,5 @@
-CREATE TABLE IF NOT EXISTS fids (
-  fid               BIGINT PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS tids (
+  tid               BIGINT PRIMARY KEY,
   custody_address   TEXT NOT NULL,
   recovery_address  TEXT NOT NULL,
   registered_at     TIMESTAMPTZ NOT NULL,
@@ -8,26 +8,26 @@ CREATE TABLE IF NOT EXISTS fids (
 );
 
 CREATE TABLE IF NOT EXISTS app_keys (
-  fid         BIGINT,
+  tid         BIGINT,
   app_pubkey  TEXT,
   scope       INT,
   created_at  TIMESTAMPTZ,
   expires_at  TIMESTAMPTZ,
   revoked     BOOLEAN DEFAULT FALSE,
-  PRIMARY KEY (fid, app_pubkey)
+  PRIMARY KEY (tid, app_pubkey)
 );
 
 CREATE TABLE IF NOT EXISTS social_graph (
-  follower_fid   BIGINT,
-  following_fid  BIGINT,
+  follower_tid   BIGINT,
+  following_tid  BIGINT,
   created_at     TIMESTAMPTZ,
   deleted_at     TIMESTAMPTZ,
-  PRIMARY KEY (follower_fid, following_fid)
+  PRIMARY KEY (follower_tid, following_tid)
 );
 
-CREATE TABLE IF NOT EXISTS casts (
+CREATE TABLE IF NOT EXISTS tweets (
   hash         TEXT PRIMARY KEY,
-  fid          BIGINT NOT NULL,
+  tid          BIGINT NOT NULL,
   parent_hash  TEXT,
   channel_id   TEXT,
   text         TEXT,
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS casts (
 
 CREATE TABLE IF NOT EXISTS reactions (
   hash         TEXT PRIMARY KEY,
-  fid          BIGINT NOT NULL,
+  tid          BIGINT NOT NULL,
   type         INT NOT NULL,
   target_hash  TEXT NOT NULL,
   timestamp    TIMESTAMPTZ,
@@ -56,9 +56,9 @@ CREATE TABLE IF NOT EXISTS sync_status (
 );
 
 -- Indexes
-CREATE INDEX IF NOT EXISTS idx_fids_custody ON fids (custody_address);
-CREATE INDEX IF NOT EXISTS idx_fids_username ON fids (username) WHERE username IS NOT NULL;
-CREATE INDEX IF NOT EXISTS idx_social_follower ON social_graph (follower_fid) WHERE deleted_at IS NULL;
-CREATE INDEX IF NOT EXISTS idx_social_following ON social_graph (following_fid) WHERE deleted_at IS NULL;
-CREATE INDEX IF NOT EXISTS idx_casts_fid ON casts (fid, timestamp DESC);
-CREATE INDEX IF NOT EXISTS idx_casts_channel ON casts (channel_id, timestamp DESC) WHERE channel_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_tids_custody ON tids (custody_address);
+CREATE INDEX IF NOT EXISTS idx_tids_username ON tids (username) WHERE username IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_social_follower ON social_graph (follower_tid) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_social_following ON social_graph (following_tid) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_tweets_tid ON tweets (tid, timestamp DESC);
+CREATE INDEX IF NOT EXISTS idx_tweets_channel ON tweets (channel_id, timestamp DESC) WHERE channel_id IS NOT NULL;

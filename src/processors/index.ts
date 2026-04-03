@@ -1,3 +1,3 @@
-export { processFidEvent } from "./fid-processor";
+export { processTidEvent } from "./tid-processor";
 export { processSocialEvent } from "./social-processor";
-export { processCast } from "./cast-processor";
+export { processTweet } from "./tweet-processor";

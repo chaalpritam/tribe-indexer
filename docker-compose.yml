@@ -22,7 +22,7 @@ services:
       SOLANA_RPC_URL: https://api.devnet.solana.com
       SOLANA_WS_URL: wss://api.devnet.solana.com
       DATABASE_URL: postgresql://tribe:tribe@postgres:5432/tribe_indexer
-      CAST_SERVER_URL: http://cast-server:3000
+      TWEET_SERVER_URL: http://tweet-server:3000
     depends_on:
       - postgres
 

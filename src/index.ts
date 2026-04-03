@@ -1,7 +1,7 @@
 import { config } from "./config";
 import { runMigrations } from "./storage/db";
 import { startSolanaListener } from "./listeners/solana-listener";
-import { startCastListener } from "./listeners/cast-listener";
+import { startTweetListener } from "./listeners/tweet-listener";
 import { buildApiServer } from "./api/server";
 
 async function main() {
@@ -12,7 +12,7 @@ async function main() {
 
   // Start background listeners.
   startSolanaListener();
-  startCastListener();
+  startTweetListener();
 
   // Start API server.
   const server = await buildApiServer();

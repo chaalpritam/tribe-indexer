@@ -5,7 +5,7 @@ export interface SolanaLogEvent {
 }
 
 export interface IndexedUser {
-  fid: string;
+  tid: string;
   custodyAddress: string;
   recoveryAddress: string;
   registeredAt: Date;
@@ -13,7 +13,7 @@ export interface IndexedUser {
 }
 
 export interface IndexedFollowEvent {
-  followerFid: string;
-  followingFid: string;
+  followerTid: string;
+  followingTid: string;
   createdAt: Date;
 }
