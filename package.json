@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@fastify/cors": "^11.2.0",
+    "@fastify/websocket": "^11.2.0",
     "@solana/web3.js": "^1.95.0",
     "dotenv": "^16.4.0",
     "fastify": "^5.0.0",
@@ -19,6 +20,7 @@
   "devDependencies": {
     "@types/node": "^20.0.0",
     "@types/pg": "^8.11.0",
+    "@types/ws": "^8.18.1",
     "tsx": "^4.0.0",
     "typescript": "^5.0.0",
     "vitest": "^2.0.0"

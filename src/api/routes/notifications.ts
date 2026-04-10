@@ -1,5 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { db } from "../../storage/db";
+import { sendToTid } from "../ws";
 
 export async function notificationRoutes(server: FastifyInstance) {
   // Get notifications for a TID
@@ -74,4 +75,7 @@ export async function createNotification(
     `INSERT INTO notifications (tid, type, from_tid, tweet_hash) VALUES ($1, $2, $3, $4)`,
     [tid, type, fromTid ?? null, tweetHash ?? null]
   );
+
+  // Push real-time notification to connected client
+  sendToTid(String(tid), "notification", { type, fromTid, tweetHash });
 }

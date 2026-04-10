@@ -1,5 +1,6 @@
 import { db } from "../storage/db";
 import { createNotification } from "../api/routes/notifications";
+import { broadcast } from "../api/ws";
 
 interface TweetData {
   hash: string;
@@ -31,6 +32,9 @@ export async function processTweet(tweet: TweetData): Promise<void> {
       tweet.timestamp,
     ]
   );
+
+  // Broadcast new tweet to all connected clients
+  broadcast("new_tweet", { hash: tweet.hash, tid: tweet.tid, channel_id: tweet.channel_id });
 
   // Create notifications for replies
   if (tweet.parent_hash) {

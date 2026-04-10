@@ -41,6 +41,17 @@ export async function dmRoutes(server: FastifyInstance) {
       return reply.status(400).send({ error: "senderTid, recipientTid, encryptedText, nonce required" });
     }
 
+    // Verify sender TID exists in the system
+    const senderCheck = await db.query(`SELECT tid FROM tids WHERE tid = $1`, [senderTid]);
+    if (senderCheck.rows.length === 0) {
+      return reply.status(403).send({ error: "Sender TID not found" });
+    }
+
+    // Limit encrypted text size to prevent abuse (NaCl box overhead + reasonable message)
+    if (encryptedText.length > 10_000 || nonce.length > 100) {
+      return reply.status(400).send({ error: "Message too large" });
+    }
+
     // Normalize conversation (smaller TID first)
     const tidA = Math.min(parseInt(senderTid), parseInt(recipientTid)).toString();
     const tidB = Math.max(parseInt(senderTid), parseInt(recipientTid)).toString();
