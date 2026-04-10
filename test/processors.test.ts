@@ -6,6 +6,13 @@ vi.mock("../src/storage/db", () => ({
   runMigrations: vi.fn(),
 }));
 
+// Mock the WebSocket module
+vi.mock("../src/api/ws", () => ({
+  registerWebSocket: vi.fn(),
+  broadcast: vi.fn(),
+  sendToTid: vi.fn(),
+}));
+
 // Mock @solana/web3.js Connection to avoid real network calls
 vi.mock("@solana/web3.js", async () => {
   const actual = await vi.importActual<typeof import("@solana/web3.js")>("@solana/web3.js");
