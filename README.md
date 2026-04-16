@@ -1,5 +1,7 @@
 # tribe-indexer
 
+> **DEPRECATED** — This functionality has been merged into [tribe-hub](https://github.com/chaalpritam/tribe-hub). The hub now handles Solana event indexing, tweet storage, and gossip peer sync in a single service. This repo is kept for reference only.
+
 Event indexer and read API for the Tribe protocol. Listens to Solana program events via WebSocket, polls the tweet server for off-chain messages, and serves aggregated data through a REST API.
 
 ## Architecture
