@@ -60,7 +60,7 @@ docker-compose up
 
 ### Manual
 
-Requires PostgreSQL 16+ and a running instance of [tweet-server](../tribe-tweet-server) for tweet polling.
+Requires PostgreSQL 16+ and a running instance of [cast-server](../tribe-cast-server) for message polling.
 
 ```bash
 cp .env.example .env   # edit as needed
